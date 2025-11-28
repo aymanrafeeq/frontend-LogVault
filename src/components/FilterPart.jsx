@@ -1,15 +1,22 @@
 import { useState } from "react";
 import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { setFilter } from "../logSlice";
 
-export default function FilterOptions() {
-  // state variables
-  const [levels, setLevels] = useState([]);
-  const [components, setComponents] = useState([]);
-  const [hosts, setHosts] = useState([]);
-  const [requestId, setRequestId] = useState("");
-  const [timeStamp, setTimeStamp] = useState("");
+/**
+ * FilterOptions
+ * Props:
+ *  - onSearch(filters) called when Search clicked or Enter pressed
+ *  - initialFilters optional
+ */
+export default function FilterOptions({ onSearch = () => {}, initialFilters = {} }) {
+  const [levels, setLevels] = useState(initialFilters.levels || []);
+  const [components, setComponents] = useState(initialFilters.components || []);
+  const [hosts, setHosts] = useState(initialFilters.hosts || []);
+  const [requestId, setRequestId] = useState([]);
+  const [timeStamp, setTimeStamp] = useState([]);
 
-  // checkbox update logic
+
   const handleCheckbox = (value, list, setList) => {
     if (list.includes(value)) {
       setList(list.filter((item) => item !== value));
@@ -18,116 +25,113 @@ export default function FilterOptions() {
     }
   };
 
+  // console.log("level: ", levels);
+
+
+  
+  
+const dispatch=useDispatch()
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  const filter = {
+    level:levels,
+    component: components,
+    host:hosts,
+    requestId: requestId,
+    timeStamp: timeStamp,
+  };
+
+  // console.log("filters: ", filter);
+  
+
+  dispatch(setFilter(filter));
+};
+
+
+  const LEVELS = ["INFO", "ERROR", "DEBUG", "WARN"];
+  const COMPONENTS = ["api-server", "auth", "cache", "database", "worker"];
+  const HOSTS = ["cache01", "db01", "web01", "web02", "worker01"];
+
   return (
-    <div className="w-full p-6">
-      <div className="flex flex-wrap gap-6">
-        {/* Level */}
-        <div className="w-60 bg-white p-4 rounded-xl shadow border border-gray-300">
-          <h3 className="text-lg font-semibold mb-2">Level</h3>
-          <FormGroup>
-            {["INFO", "ERROR", "DEBUG", "WARN"].map((lvl) => (
-              <FormControlLabel
-                key={lvl}
-                control={
-                  <Checkbox
-                    checked={levels.includes(lvl)}
-                    onChange={() => handleCheckbox(lvl, levels, setLevels)}
-                  />
-                }
-                label={lvl}
-              />
-            ))}
-          </FormGroup>
-        </div>
-
-        {/* Component */}
-        <div className="w-60 bg-white p-4 rounded-xl shadow border border-gray-300">
-          <h3 className="text-lg font-semibold mb-2">Component</h3>
-          <FormGroup>
-            {["api-server", "auth", "cache", "database", "worker"].map(
-              (cmp) => (
-                <FormControlLabel
-                  key={cmp}
-                  control={
-                    <Checkbox
-                      checked={components.includes(cmp)}
-                      onChange={() =>
-                        handleCheckbox(cmp, components, setComponents)
-                      }
-                    />
-                  }
-                  label={cmp}
-                />
-              )
-            )}
-          </FormGroup>
-        </div>
-
-        {/* Host */}
-        <div className="w-60 bg-white p-4 rounded-xl shadow border border-gray-300">
-          <h3 className="text-lg font-semibold mb-2">Host</h3>
-          <FormGroup>
-            {["cache01", "db01", "web01", "web02", "worker"].map((hst) => (
-              <FormControlLabel
-                key={hst}
-                control={
-                  <Checkbox
-                    checked={hosts.includes(hst)}
-                    onChange={() => handleCheckbox(hst, hosts, setHosts)}
-                  />
-                }
-                label={hst}
-              />
-            ))}
-          </FormGroup>
-        </div>
-
-        {/* Request ID */}
-        {/* Request ID + Timestamp Row */}
-        <div className="flex gap-6">
-          {/* Request ID */}
-          <div className="w-60 bg-white p-4 rounded-xl shadow border border-gray-300">
-            <h3 className="text-lg font-semibold mb-2">Request ID</h3>
-            <input
-              type="text"
-              placeholder="req-4leuyy-5910"
-              value={requestId}
-              onChange={(e) => setRequestId(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
-            />
-          </div>
-
-          {/* Time Stamp */}
-          <div className="w-60 bg-white p-4 rounded-xl shadow border border-gray-300">
-            <h3 className="text-lg font-semibold mb-2">Time Stamp</h3>
-            <input
-              type="text"
-              placeholder=">2025-10-23 15:17:42.636"
-              value={timeStamp}
-              onChange={(e) => setTimeStamp(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Search button */}
-      <div className="w-full flex justify-center mt-6">
+    <form onSubmit={handleSubmit} className="w-full p-6">
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center mb-4">
+        <input
+          name="timestamp"
+          type="text"
+          placeholder="enter the DateTime (e.g. 2025-11-17 16:53:00)"
+          value={timeStamp}
+          onChange={(e) => setTimeStamp(e.target.value)}
+          className="flex-1 border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        />
+        <input
+          name="request_id"
+          type="text"
+          placeholder="enter the RequestId"
+          value={requestId}
+          onChange={(e) => setRequestId(e.target.value)}
+          className="flex-1 border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        />
         <button
-          className="px-10 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition"
-          onClick={() => {
-            console.log("Filters:", {
-              levels,
-              components,
-              hosts,
-              requestId,
-              timeStamp,
-            });
-          }}
+          type="submit"
+          className="w-28 shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded px-3 py-2 text-sm font-medium shadow"
         >
           Search
         </button>
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <fieldset className="p-3 rounded border border-gray-100 bg-indigo-50">
+          <legend className="text-sm font-semibold text-indigo-700 mb-2">Levels</legend>
+          <div className="flex flex-wrap gap-3 text-sm">
+            {LEVELS.map((lvl) => (
+              <label key={lvl} className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={levels.includes(lvl)}
+                  onChange={() => handleCheckbox(lvl, levels, setLevels)}
+                />
+                <span>{lvl}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="p-3 rounded border border-gray-100 bg-amber-50">
+          <legend className="text-sm font-semibold text-amber-800 mb-2">Components</legend>
+          <div className="flex flex-wrap gap-3 text-sm">
+            {COMPONENTS.map((cmp) => (
+              <label key={cmp} className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={components.includes(cmp)}
+                  onChange={() => handleCheckbox(cmp, components, setComponents)}
+                />
+                <span>{cmp}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="p-3 rounded border border-gray-100 bg-emerald-50">
+          <legend className="text-sm font-semibold text-emerald-800 mb-2">Hosts</legend>
+          <div className="flex flex-wrap gap-3 text-sm">
+            {HOSTS.map((hst) => (
+              <label key={hst} className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={hosts.includes(hst)}
+                  onChange={() => handleCheckbox(hst, hosts, setHosts)}
+                />
+                <span>{hst}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+    </form>
   );
 }
