@@ -71,7 +71,7 @@ export default function LogTable() {
                 }));
 
                 dispatch(setLogs(rows))
-                setTotal(response.data.count)
+                setTotal(response.data.total)
             })
             .catch(function (error) {
                 console.log(error);
