@@ -8,7 +8,6 @@ import { startTransition } from "react";
 import dayjs from "dayjs";
 import DateTimeRange from "./TimeRange";
 
-
 /**
  * FilterOptions
  * Props:
@@ -23,9 +22,8 @@ export default function FilterOptions({
   const [components, setComponents] = useState(initialFilters.components || []);
   const [hosts, setHosts] = useState(initialFilters.hosts || []);
   const [requestId, setRequestId] = useState([]);
-  const [startTime, setStartTime]  = useState(null);
+  const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-
 
   const handleCheckbox = (value, list, setList) => {
     if (list.includes(value)) {
@@ -46,8 +44,10 @@ export default function FilterOptions({
       components: components,
       hosts: hosts,
       requestIds: requestId,
-      startTime: startTime ? dayjs(startTime).format("YYYY-MM-DD HH:mm:ss") : null,
-      endTime: endTime ? dayjs(endTime).format("YYYY-MM-DD HH:mm:ss") : null
+      startTime: startTime
+        ? dayjs(startTime).format("YYYY-MM-DD HH:mm:ss")
+        : null,
+      endTime: endTime ? dayjs(endTime).format("YYYY-MM-DD HH:mm:ss") : null,
     };
 
     console.log("filters: ", filter);
@@ -94,65 +94,86 @@ export default function FilterOptions({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* LEVELS */}
         <fieldset className="p-3 rounded border border-gray-100 bg-indigo-50">
           <legend className="text-sm font-semibold text-indigo-700 mb-2">
             Levels
           </legend>
-          <div className="flex flex-wrap gap-3 text-sm">
-            {LEVELS.map((lvl) => (
-              <label key={lvl} className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4"
-                  checked={levels.includes(lvl)}
-                  onChange={() => handleCheckbox(lvl, levels, setLevels)}
-                />
-                <span>{lvl}</span>
-              </label>
-            ))}
+          <div className="flex flex-wrap gap-2 text-sm">
+            {LEVELS.map((lvl) => {
+              const active = levels.includes(lvl);
+              return (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => handleCheckbox(lvl, levels, setLevels)}
+                  className={
+                    "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition " +
+                    (active
+                      ? "bg-indigo-600 text-white shadow ring-1 ring-indigo-300"
+                      : "bg-white text-indigo-700 border border-indigo-200 hover:shadow")
+                  }
+                >
+                  {lvl}
+                </button>
+              );
+            })}
           </div>
         </fieldset>
 
+        {/* COMPONENTS */}
         <fieldset className="p-3 rounded border border-gray-100 bg-amber-50">
           <legend className="text-sm font-semibold text-amber-800 mb-2">
             Components
           </legend>
-          <div className="flex flex-wrap gap-3 text-sm">
-            {COMPONENTS.map((cmp) => (
-              <label key={cmp} className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4"
-                  checked={components.includes(cmp)}
-                  onChange={() =>
-                    handleCheckbox(cmp, components, setComponents)
+          <div className="flex flex-wrap gap-2 text-sm">
+            {COMPONENTS.map((cmp) => {
+              const active = components.includes(cmp);
+              return (
+                <button
+                  key={cmp}
+                  type="button"
+                  onClick={() => handleCheckbox(cmp, components, setComponents)}
+                  className={
+                    "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition " +
+                    (active
+                      ? "bg-amber-700 text-white shadow ring-1 ring-amber-300"
+                      : "bg-white text-amber-800 border border-amber-200 hover:shadow")
                   }
-                />
-                <span>{cmp}</span>
-              </label>
-            ))}
+                >
+                  {cmp}
+                </button>
+              );
+            })}
           </div>
         </fieldset>
 
+        {/* HOSTS */}
         <fieldset className="p-3 rounded border border-gray-100 bg-emerald-50">
           <legend className="text-sm font-semibold text-emerald-800 mb-2">
             Hosts
           </legend>
-          <div className="flex flex-wrap gap-3 text-sm">
-            {HOSTS.map((hst) => (
-              <label key={hst} className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4"
-                  checked={hosts.includes(hst)}
-                  onChange={() => handleCheckbox(hst, hosts, setHosts)}
-                />
-                <span>{hst}</span>
-              </label>
-            ))}
+          <div className="flex flex-wrap gap-2 text-sm">
+            {HOSTS.map((hst) => {
+              const active = hosts.includes(hst);
+              return (
+                <button
+                  key={hst}
+                  type="button"
+                  onClick={() => handleCheckbox(hst, hosts, setHosts)}
+                  className={
+                    "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition " +
+                    (active
+                      ? "bg-emerald-700 text-white shadow ring-1 ring-emerald-300"
+                      : "bg-white text-emerald-800 border border-emerald-200 hover:shadow")
+                  }
+                >
+                  {hst}
+                </button>
+              );
+            })}
           </div>
         </fieldset>
-        
       </div>
     </form>
   );
